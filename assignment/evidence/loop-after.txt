@@ -1,0 +1,15 @@
+h1 python3 send.py 10.83.0.3 "loop after" --tunnel 3 --hops 5
+
+The packet was sent with an initial tunnel hop-limit of 5.
+
+Packet processing counts
+
+Initial count:
+
+logs/s1.txt: 444
+logs/s2.txt: 441
+
+Count after waiting 5 seconds:
+
+logs/s1.txt: 444
+logs/s2.txt: 441
