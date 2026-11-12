@@ -129,7 +129,7 @@ Cost on a line-rate hardware switch
 
 ## AI use
 
-I used ChatGPT to explain P4 and BMv2 concepts, help interpret logs and packet captures, discuss the hop-limit design, and draft and refine this report. I ran every command and produced all evidence files myself, and I checked each claim in this report against my own outputs. I can explain and defend every part. 
+I used ChatGPT to explain P4 and BMv2 concepts, help interpret logs and packet captures, discuss the hop-limit design, and draft and refine this report. I ran every command and produced all evidence files myself, and I checked each claim in this report against my own outputs. I can explain and defend every part. [Edit this so it matches what really happened.]
 
 ## Evidence files
 
