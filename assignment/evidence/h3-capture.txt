@@ -1,0 +1,10 @@
+tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+listening on h3-eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+14:05:25.362321 00:00:00:00:00:01 > ff:ff:ff:ff:ff:ff, ethertype Unknown (0x1212), length 54: 
+	0x0000:  ffff ffff ffff 0000 0000 0001 1212 0800  ................
+	0x0010:  0003 0345 0000 2300 0100 0040 1166 200a  ...E..#....@.f..
+	0x0020:  5300 010a 5300 0310 e110 e100 0f8e 2274  S...S........."t
+	0x0030:  6573 7420 6833                           est.h3
+1 packet captured
+1 packet received by filter
+0 packets dropped by kernel

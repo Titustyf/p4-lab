@@ -1,0 +1,21 @@
+C1 - Tunnel loop before hop-limit protection
+
+Command:
+h1 python3 send.py 10.83.0.3 "loop" --tunnel 3
+
+Command:
+sh grep -c "Processing packet received" logs/s1.txt logs/s2.txt
+
+Output:
+logs/s1.txt: 794
+logs/s2.txt: 791
+
+Command:
+sh sleep 5
+
+Command:
+sh grep -c "Processing packet received" logs/s1.txt logs/s2.txt
+
+Output:
+logs/s1.txt: 1522
+logs/s2.txt: 1521

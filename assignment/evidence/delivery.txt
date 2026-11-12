@@ -1,0 +1,138 @@
+# C4 - Tunnel Delivery Verification
+
+## Test 1: Delivery to h2
+
+Command:
+
+```bash
+h1 python3 send.py 10.83.0.2 "test h2" --tunnel 2 --hops 5
+```
+
+Result:
+- Packet successfully transmitted from h1.
+- Destination tunnel ID: 2.
+- Initial hop-limit: 5.
+- Packet captured at h2 using tcpdump.
+- Remaining hop-limit at h2: 3.
+- Payload: `test h2`.
+
+## Test 2: Delivery to h3
+
+Command:
+
+```bash
+h1 python3 send.py 10.83.0.3 "test h3" --tunnel 3 --hops 5
+```
+
+Result:
+- Packet successfully transmitted from h1.
+- Destination tunnel ID: 3.
+- Initial hop-limit: 5.
+- Packet captured at h3 using tcpdump.
+- Remaining hop-limit at h3: 3.
+- Payload: `test h3`.
+
+
+
+## Conclusion
+
+Both tunnel delivery tests were successful. The packet captures confirmed that the custom tunnel header was correctly transmitted and parsed. The hop-limit decreased from 5 to 3 after passing through s1 and s2, demonstrating that each switch decremented the hop-limit once before forwarding the packet.
+
+
+mininet> h2 tcpdump -ni h2-eth0 -XX -c 1 > /tmp/h2-capture.txt 2>&1 &
+mininet> h1 python3 send.py 10.83.0.2 "test h2" --tunnel 2 --hops 5
+###[ Ethernet ]### 
+  dst       = ff:ff:ff:ff:ff:ff
+  src       = 00:00:00:00:00:01
+  type      = 0x1212
+###[ MyTunnel ]### 
+     proto_id  = 2048
+     dst_id    = 2
+     hop_limit = 5
+###[ IP ]### 
+        version   = 4
+        ihl       = 5
+        tos       = 0x0
+        len       = 35
+        id        = 1
+        flags     = 
+        frag      = 0
+        ttl       = 64
+        proto     = udp
+        chksum    = 0x6621
+        src       = 10.83.0.1
+        dst       = 10.83.0.2
+        \options   \
+###[ UDP ]### 
+           sport     = 4321
+           dport     = 4321
+           len       = 15
+           chksum    = 0x8f23
+###[ Raw ]### 
+              load      = 'test h2'
+
+Sent from h1-eth0.
+mininet> sh cat /tmp/h2-capture.txt
+tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+listening on h2-eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+14:04:04.707244 00:00:00:00:00:01 > ff:ff:ff:ff:ff:ff, ethertype Unknown (0x1212), length 54: 
+        0x0000:  ffff ffff ffff 0000 0000 0001 1212 0800  ................
+        0x0010:  0002 0345 0000 2300 0100 0040 1166 210a  ...E..#....@.f!.
+        0x0020:  5300 010a 5300 0210 e110 e100 0f8f 2374  S...S.........#t
+        0x0030:  6573 7420 6832                           est.h2
+1 packet captured
+1 packet received by filter
+0 packets dropped by kernel
+mininet> h3 tcpdump -ni h3-eth0 -XX -c 1 > /tmp/h3-capture.txt 2>&1 &
+mininet> h1 python3 send.py 10.83.0.3 "test h3" --tunnel 3 --hops 5
+###[ Ethernet ]### 
+  dst       = ff:ff:ff:ff:ff:ff
+  src       = 00:00:00:00:00:01
+  type      = 0x1212
+###[ MyTunnel ]### 
+     proto_id  = 2048
+     dst_id    = 3
+     hop_limit = 5
+###[ IP ]### 
+        version   = 4
+        ihl       = 5
+        tos       = 0x0
+        len       = 35
+        id        = 1
+        flags     = 
+        frag      = 0
+        ttl       = 64
+        proto     = udp
+        chksum    = 0x6620
+        src       = 10.83.0.1
+        dst       = 10.83.0.3
+        \options   \
+###[ UDP ]### 
+           sport     = 4321
+           dport     = 4321
+           len       = 15
+           chksum    = 0x8e22
+###[ Raw ]### 
+              load      = 'test h3'
+
+Sent from h1-eth0.
+mininet> sh cat /tmp/h3-capture.txt
+tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+listening on h3-eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+14:05:25.362321 00:00:00:00:00:01 > ff:ff:ff:ff:ff:ff, ethertype Unknown (0x1212), length 54: 
+        0x0000:  ffff ffff ffff 0000 0000 0001 1212 0800  ................
+        0x0010:  0003 0345 0000 2300 0100 0040 1166 200a  ...E..#....@.f..
+        0x0020:  5300 010a 5300 0310 e110 e100 0f8e 2274  S...S........."t
+        0x0030:  6573 7420 6833                           est.h3
+1 packet captured
+1 packet received by filter
+0 packets dropped by kernel
+
+mininet> h1 ping -c 2 h3
+PING 10.83.0.3 (10.83.0.3) 56(84) bytes of data.
+64 bytes from 10.83.0.3: icmp_seq=1 ttl=62 time=11.2 ms
+64 bytes from 10.83.0.3: icmp_seq=2 ttl=62 time=10.2 ms
+
+--- 10.83.0.3 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+rtt min/avg/max/mdev = 10.248/10.747/11.247/0.499 ms
